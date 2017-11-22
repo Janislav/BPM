@@ -56,3 +56,6 @@ DEPENDPATH += $$PWD/../../audio-development/libs/aubio-0.4.5.iosuniversal_framew
 
 DISTFILES += \
     Info.plist
+
+RESOURCES += \
+    record.qrc

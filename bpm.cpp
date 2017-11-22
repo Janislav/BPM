@@ -59,7 +59,6 @@ void BPM::on_pushButton_clicked()
     if(toggle){
         toggle = false;
         qInfo() << "Start recording";
-        ui->pushButton->setText("listening...");
         recorder->record();
     } else {
         toggle = true;
@@ -72,7 +71,6 @@ void BPM::on_pushButton_clicked()
         qInfo() << "BPM FINAL: " << sbpm;
 
         ui->lcdNumber->display(sbpm);
-        ui->pushButton->setText("analyse bpm");
     }
 }
 
