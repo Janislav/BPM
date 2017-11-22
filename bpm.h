@@ -28,6 +28,7 @@ private:
     Ui::BPM *ui;
     QAudioEncoderSettings settings;
     QAudioRecorder * recorder;
+    QUrl fileUrl;
     bool toggle;
     int analyseBPM();
 };

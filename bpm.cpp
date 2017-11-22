@@ -11,23 +11,13 @@ BPM::BPM(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BPM)
 {
-    qInfo() << "Called constuctor";
-
-
-    qInfo() << "Write a text file";
-
-    qInfo() << "Done write a text file";
-
     qRegisterMetaType<QAudio::State>("QAudio::State");
 
     toggle = true;
 
-    QString pwd("");
-    char * PWD;
-    PWD = getenv ("PWD");
-    pwd.append(PWD);
-
-    qInfo() << "Home is: " << QDir::currentPath();
+    QUrl fileUrl = QUrl::fromLocalFile(
+        QStandardPaths::writableLocation(
+            QStandardPaths::HomeLocation).append("/Documents/record.wav"));
 
     settings.setCodec("audio/raw");
     settings.setSampleRate(44100);
@@ -37,14 +27,7 @@ BPM::BPM(QWidget *parent) :
 
     recorder->setEncodingSettings(settings);
 
-    recorder->setOutputLocation(
-                QUrl::fromLocalFile(
-                    QStandardPaths::writableLocation(
-                        QStandardPaths::HomeLocation).append("/Documents/test.wav")));
-
-    QString selectedInput = recorder->defaultAudioInput();
-    qInfo() << "Info: " << selectedInput;
-
+    recorder->setOutputLocation(fileUrl);
     ui->setupUi(this);
 }
 
@@ -55,21 +38,14 @@ BPM::~BPM()
 
 void BPM::on_pushButton_clicked()
 {
-    qInfo() << "Clicked button";
     if(toggle){
         toggle = false;
-        qInfo() << "Start recording";
         recorder->record();
     } else {
         toggle = true;
-        qInfo() << "Stop recording";
         recorder->stop();
         int bpm = analyseBPM();
         QString sbpm = QString::number(bpm);
-        //QString* bpmstr = new QString(std::to_string(bpm));
-
-        qInfo() << "BPM FINAL: " << sbpm;
-
         ui->lcdNumber->display(sbpm);
     }
 }
@@ -77,12 +53,13 @@ void BPM::on_pushButton_clicked()
 int BPM::analyseBPM(){
     qInfo() << "BPM::analyseBPM() -> call function";
 
-    QString path = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/Documents/test.wav")).toString();
+    QString path = QUrl::fromLocalFile(
+                QStandardPaths::writableLocation(
+                    QStandardPaths::HomeLocation).append("/Documents/record.wav")).toString();
+
     std::string str = path.toStdString();
     str = str.erase(0,6);
     const char_t * p = str.c_str();
-
-    qInfo() << "Path is: " << p;
 
     aubio_source_t * source = new_aubio_source(p ,44100, 256);
 
@@ -122,8 +99,6 @@ int BPM::analyseBPM(){
     del_fvec(in);
     del_fvec(out);
     del_aubio_source(source);
-
-    qInfo() << "BPM: " << bpmSum/counter;
 
     return bpmSum/counter;
 }
