@@ -19,6 +19,29 @@ BPM::BPM(QWidget *parent) :
         QStandardPaths::writableLocation(
             QStandardPaths::HomeLocation).append("/Documents/record.wav"));
 
+
+    timer = new QTimer();
+
+    timer->setInterval(2000);
+
+    connect(timer, &QTimer::timeout, this, [=](){
+        qInfo() << "Checking BPM now";
+        recorder->stop();
+        int bpm = analyseBPM();
+        qInfo() << "Current BPM: " << bpm;
+        if((bpm > 145) || (bpm < 90)){
+            qInfo() << "BPM is wrong, try it again! ";
+            recorder->record();
+        } else {
+            QString sbpm = QString::number(bpm);
+            qInfo() << "BPM is right! ";
+            ui->lcdNumber->display(sbpm);
+            toggle = true;
+            ui->pushButton->setDisabled(false);
+            timer->stop();
+        }
+    });
+
     settings.setCodec("audio/raw");
     settings.setSampleRate(44100);
     settings.setQuality(QMultimedia::HighQuality);
@@ -40,13 +63,15 @@ void BPM::on_pushButton_clicked()
 {
     if(toggle){
         toggle = false;
+        ui->pushButton->setDisabled(true);
+        timer->start(2000);
         recorder->record();
     } else {
         toggle = true;
-        recorder->stop();
-        int bpm = analyseBPM();
-        QString sbpm = QString::number(bpm);
-        ui->lcdNumber->display(sbpm);
+        //recorder->stop();
+        //int bpm = analyseBPM();
+        //QString sbpm = QString::number(bpm);
+        //ui->lcdNumber->display(sbpm);
     }
 }
 

@@ -52,8 +52,7 @@ border: none;</string>
         </property>
         <property name="icon">
          <iconset resource="record.qrc">
-          <normaloff>:/pictures/record.png</normaloff>
-          <normalon>:/pictures/recording.png</normalon>:/pictures/record.png</iconset>
+          <normaloff>:/pictures/recording.png</normaloff>:/pictures/recording.png</iconset>
         </property>
         <property name="iconSize">
          <size>
